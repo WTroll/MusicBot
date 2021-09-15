@@ -15,11 +15,8 @@
  */
 package com.jagrosh.jmusicbot.queue;
 
-/**
- *
- * @author John Grosh <john.a.grosh@gmail.com>
- */
+/** @author John Grosh <john.a.grosh@gmail.com> */
 public interface Queueable {
-    
-    public long getIdentifier();
+
+  long getIdentifier();
 }
