@@ -33,13 +33,10 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-/** @author John Grosh (john.a.grosh@gmail.com) */
-public class PlaylistLoader {
-  private final BotConfig config;
-
-  public PlaylistLoader(BotConfig config) {
-    this.config = config;
-  }
+/**
+ * @author John Grosh (john.a.grosh@gmail.com)
+ */
+public record PlaylistLoader(BotConfig config) {
 
   private static <T> void shuffle(List<T> list) {
     for (int first = 0; first < list.size(); first++) {
@@ -89,7 +86,9 @@ public class PlaylistLoader {
   }
 
   public Playlist getPlaylist(String name) {
-    if (!getPlaylistNames().contains(name)) return null;
+    if (!getPlaylistNames().contains(name)) {
+      return null;
+    }
     try {
       if (folderExists()) {
         boolean[] shuffle = {false};
@@ -99,14 +98,21 @@ public class PlaylistLoader {
             .forEach(
                 str -> {
                   String s = str.trim();
-                  if (s.isEmpty()) return;
+                  if (s.isEmpty()) {
+                    return;
+                  }
                   if (s.startsWith("#") || s.startsWith("//")) {
                     s = s.replaceAll("\\s+", "");
-                    if (s.equalsIgnoreCase("#shuffle") || s.equalsIgnoreCase("//shuffle"))
+                    if (s.equalsIgnoreCase("#shuffle") || s.equalsIgnoreCase("//shuffle")) {
                       shuffle[0] = true;
-                  } else list.add(s);
+                    }
+                  } else {
+                    list.add(s);
+                  }
                 });
-        if (shuffle[0]) shuffle(list);
+        if (shuffle[0]) {
+          shuffle(list);
+        }
         return new Playlist(name, list, shuffle[0]);
       } else {
         createFolder();
@@ -118,6 +124,7 @@ public class PlaylistLoader {
   }
 
   public class Playlist {
+
     private final String name;
     private final List<String> items;
     private final boolean shuffle;
@@ -133,7 +140,9 @@ public class PlaylistLoader {
 
     public void loadTracks(
         AudioPlayerManager manager, Consumer<AudioTrack> consumer, Runnable callback) {
-      if (loaded) return;
+      if (loaded) {
+        return;
+      }
       loaded = true;
       for (int i = 0; i < items.size(); i++) {
         boolean last = i + 1 == items.size();
@@ -144,20 +153,24 @@ public class PlaylistLoader {
             new AudioLoadResultHandler() {
               private void done() {
                 if (last) {
-                  if (shuffle) shuffleTracks();
-                  if (callback != null) callback.run();
+                  if (shuffle) {
+                    shuffleTracks();
+                  }
+                  if (callback != null) {
+                    callback.run();
+                  }
                 }
               }
 
               @Override
               public void trackLoaded(AudioTrack at) {
-                if (config.isTooLong(at))
+                if (config.isTooLong(at)) {
                   errors.add(
                       new PlaylistLoadError(
                           index,
                           items.get(index),
                           "This track is longer than the allowed maximum"));
-                else {
+                } else {
                   at.setUserData(0L);
                   tracks.add(at);
                   consumer.accept(at);
@@ -173,17 +186,18 @@ public class PlaylistLoader {
                   trackLoaded(ap.getSelectedTrack());
                 } else {
                   List<AudioTrack> loaded = new ArrayList<>(ap.getTracks());
-                  if (shuffle)
+                  if (shuffle) {
                     for (int first = 0; first < loaded.size(); first++) {
                       int second = (int) (Math.random() * loaded.size());
                       AudioTrack tmp = loaded.get(first);
                       loaded.set(first, loaded.get(second));
                       loaded.set(second, tmp);
                     }
+                  }
                   loaded.removeIf(config::isTooLong);
                   loaded.forEach(at -> at.setUserData(0L));
                   tracks.addAll(loaded);
-                  loaded.forEach(consumer::accept);
+                  loaded.forEach(consumer);
                 }
                 done();
               }
@@ -228,27 +242,7 @@ public class PlaylistLoader {
     }
   }
 
-  public static class PlaylistLoadError {
-    private final int number;
-    private final String item;
-    private final String reason;
+  public record PlaylistLoadError(int number, String item, String reason) {
 
-    private PlaylistLoadError(int number, String item, String reason) {
-      this.number = number;
-      this.item = item;
-      this.reason = reason;
-    }
-
-    public int getIndex() {
-      return number;
-    }
-
-    public String getItem() {
-      return item;
-    }
-
-    public String getReason() {
-      return reason;
-    }
   }
 }

@@ -332,11 +332,11 @@ public class PlayCmd extends MusicCommand {
                               err ->
                                   builder
                                       .append("\n`[")
-                                      .append(err.getIndex() + 1)
+                                      .append(err.number() + 1)
                                       .append("]` **")
-                                      .append(err.getItem())
+                                      .append(err.item())
                                       .append("**: ")
-                                      .append(err.getReason()));
+                                      .append(err.reason()));
                       String str = builder.toString();
                       if (str.length() > 2000) str = str.substring(0, 1994) + " (...)";
                       m.editMessage(FormatUtil.filter(str)).queue();

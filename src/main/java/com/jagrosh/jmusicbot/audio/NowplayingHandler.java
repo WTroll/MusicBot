@@ -63,7 +63,7 @@ public class NowplayingHandler {
         continue;
       }
       Pair<Long, Long> pair = lastNP.get(guildId);
-      TextChannel tc = guild.getTextChannelById(pair.getKey());
+      TextChannel tc = guild.getTextChannelById(pair.key());
       if (tc == null) {
         toRemove.add(guildId);
         continue;
@@ -75,12 +75,12 @@ public class NowplayingHandler {
         toRemove.add(guildId);
       }
       try {
-        tc.editMessageById(pair.getValue(), msg).queue(m -> {}, t -> lastNP.remove(guildId));
+        tc.editMessageById(pair.value(), msg).queue(m -> {}, t -> lastNP.remove(guildId));
       } catch (Exception e) {
         toRemove.add(guildId);
       }
     }
-    toRemove.forEach(id -> lastNP.remove(id));
+    toRemove.forEach(lastNP::remove);
   }
 
   public void updateTopic(long guildId, AudioHandler handler, boolean wait) {
@@ -114,9 +114,8 @@ public class NowplayingHandler {
     if (bot.getConfig().getSongInStatus()) {
       if (track != null
           && bot.getJDA().getGuilds().stream()
-                  .filter(g -> g.getSelfMember().getVoiceState().inVoiceChannel())
-                  .count()
-              <= 1)
+          .filter(g -> g.getSelfMember().getVoiceState().inVoiceChannel())
+          .count() <= 1)
         bot.getJDA().getPresence().setActivity(Activity.listening(track.getInfo().title));
       else bot.resetGame();
     }
@@ -128,6 +127,6 @@ public class NowplayingHandler {
   public void onMessageDelete(Guild guild, long messageId) {
     Pair<Long, Long> pair = lastNP.get(guild.getIdLong());
     if (pair == null) return;
-    if (pair.getValue() == messageId) lastNP.remove(guild.getIdLong());
+    if (pair.value() == messageId) lastNP.remove(guild.getIdLong());
   }
 }
