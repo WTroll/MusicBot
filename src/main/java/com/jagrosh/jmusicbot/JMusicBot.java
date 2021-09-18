@@ -186,6 +186,9 @@ public class JMusicBot {
               .setBulkDeleteSplittingEnabled(true)
               .build();
       bot.setJDA(jda);
+      // Registers hook to shut down the bot when JVM receives SIGINT
+      Runnable cleanup = bot::shutdown;
+      Runtime.getRuntime().addShutdownHook(new Thread(cleanup));
     } catch (LoginException ex) {
       String errorMessage = """
           Please make sure you are\040
