@@ -17,7 +17,6 @@ package com.jagrosh.jmusicbot;
 
 import com.jagrosh.jdautilities.command.CommandClientBuilder;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
-import com.jagrosh.jdautilities.examples.command.AboutCommand;
 import com.jagrosh.jdautilities.examples.command.PingCommand;
 import com.jagrosh.jmusicbot.commands.admin.PrefixCmd;
 import com.jagrosh.jmusicbot.commands.admin.SetdjCmd;
@@ -52,11 +51,7 @@ import com.jagrosh.jmusicbot.commands.owner.SetgameCmd;
 import com.jagrosh.jmusicbot.commands.owner.SetnameCmd;
 import com.jagrosh.jmusicbot.commands.owner.SetstatusCmd;
 import com.jagrosh.jmusicbot.commands.owner.ShutdownCmd;
-import com.jagrosh.jmusicbot.entities.Prompt;
-import com.jagrosh.jmusicbot.gui.GUI;
 import com.jagrosh.jmusicbot.settings.SettingsManager;
-import com.jagrosh.jmusicbot.utils.OtherUtil;
-import java.awt.Color;
 import java.util.Arrays;
 import javax.security.auth.login.LoginException;
 import net.dv8tion.jda.api.JDA;
@@ -75,48 +70,32 @@ public class JMusicBot {
   public static final String PAUSE_EMOJI = "\u23F8"; // ⏸
   public static final String STOP_EMOJI = "\u23F9"; // ⏹
   public static final Permission[] RECOMMENDED_PERMS = {
-    Permission.MESSAGE_READ,
-    Permission.MESSAGE_WRITE,
-    Permission.MESSAGE_HISTORY,
-    Permission.MESSAGE_ADD_REACTION,
-    Permission.MESSAGE_EMBED_LINKS,
-    Permission.MESSAGE_ATTACH_FILES,
-    Permission.MESSAGE_MANAGE,
-    Permission.MESSAGE_EXT_EMOJI,
-    Permission.MANAGE_CHANNEL,
-    Permission.VOICE_CONNECT,
-    Permission.VOICE_SPEAK,
-    Permission.NICKNAME_CHANGE
+      Permission.MESSAGE_READ,
+      Permission.MESSAGE_WRITE,
+      Permission.MESSAGE_HISTORY,
+      Permission.MESSAGE_ADD_REACTION,
+      Permission.MESSAGE_EMBED_LINKS,
+      Permission.MESSAGE_ATTACH_FILES,
+      Permission.MESSAGE_MANAGE,
+      Permission.MESSAGE_EXT_EMOJI,
+      Permission.MANAGE_CHANNEL,
+      Permission.VOICE_CONNECT,
+      Permission.VOICE_SPEAK,
+      Permission.NICKNAME_CHANGE
   };
   public static final GatewayIntent[] INTENTS = {
-    GatewayIntent.DIRECT_MESSAGES,
-    GatewayIntent.GUILD_MESSAGES,
-    GatewayIntent.GUILD_MESSAGE_REACTIONS,
-    GatewayIntent.GUILD_VOICE_STATES
+      GatewayIntent.DIRECT_MESSAGES,
+      GatewayIntent.GUILD_MESSAGES,
+      GatewayIntent.GUILD_MESSAGE_REACTIONS,
+      GatewayIntent.GUILD_VOICE_STATES
   };
   /** @param args the command line arguments */
   public static void main(String[] args) {
     // startup log
     Logger log = LoggerFactory.getLogger("Startup");
 
-    // create prompt to handle startup
-    Prompt prompt =
-        new Prompt(
-            "JMusicBot",
-            "Switching to nogui mode. You can manually start in nogui mode by including the -Dnogui=true flag.");
-
-    // get and check latest version
-    String version = OtherUtil.checkVersion(prompt);
-
-    // check for valid java version
-    if (!System.getProperty("java.vm.name").contains("64"))
-      prompt.alert(
-          Prompt.Level.WARNING,
-          "Java Version",
-          "It appears that you may not be using a supported Java version. Please use 64-bit java.");
-
     // load config
-    BotConfig config = new BotConfig(prompt);
+    BotConfig config = new BotConfig();
     config.load();
     if (!config.isValid()) return;
 
@@ -191,18 +170,6 @@ public class JMusicBot {
       cb.setActivity(null);
       nogame = true;
     } else cb.setActivity(config.getGame());
-
-    if (!prompt.isNoGUI()) {
-      try {
-        GUI gui = new GUI(bot);
-        bot.setGUI(gui);
-        gui.init();
-      } catch (Exception e) {
-        log.error(
-            "Could not start GUI. If you are "
-                + "running on a server or in a location where you cannot display a "
-                + "window, please run in nogui mode using the -Dnogui=true flag.");
-      }
     }
 
     log.info("Loaded config from " + config.getConfigLocation());
@@ -228,24 +195,19 @@ public class JMusicBot {
               .build();
       bot.setJDA(jda);
     } catch (LoginException ex) {
-      prompt.alert(
-          Prompt.Level.ERROR,
-          "JMusicBot",
-          ex
-              + "\nPlease make sure you are "
-              + "editing the correct config.txt file, and that you have used the "
-              + "correct token (not the 'secret'!)\nConfig Location: "
-              + config.getConfigLocation());
+      String errorMessage = """
+          Please make sure you are\040
+          editing the correct config.txt file, and that you have used the\040
+          correct token (not the 'secret'!)
+          Config Location:\040""" + config.getConfigLocation();
+      log.error(errorMessage);
       System.exit(1);
     } catch (IllegalArgumentException ex) {
-      prompt.alert(
-          Prompt.Level.ERROR,
-          "JMusicBot",
-          "Some aspect of the configuration is "
-              + "invalid: "
-              + ex
-              + "\nConfig Location: "
-              + config.getConfigLocation());
+      String errorMessage =
+          """
+          Some aspect of the configuration is invalid: 
+          """ + ex + "\nConfig Location: " + config.getConfigLocation();
+      log.error(errorMessage, ex);
       System.exit(1);
     }
   }

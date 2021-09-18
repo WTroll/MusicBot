@@ -16,7 +16,6 @@
 package com.jagrosh.jmusicbot.utils;
 
 import com.jagrosh.jmusicbot.JMusicBot;
-import com.jagrosh.jmusicbot.entities.Prompt;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -144,24 +143,6 @@ public class OtherUtil {
     if (status == null || status.trim().isEmpty()) return OnlineStatus.ONLINE;
     OnlineStatus st = OnlineStatus.fromKey(status);
     return st == null ? OnlineStatus.ONLINE : st;
-  }
-
-  public static String checkVersion(Prompt prompt) {
-    // Get current version number
-    String version = getCurrentVersion();
-
-    // Check for new version
-    String latestVersion = getLatestVersion();
-
-    if (latestVersion != null && !latestVersion.equals(version)) {
-      prompt.alert(
-          Prompt.Level.WARNING,
-          "Version",
-          String.format(NEW_VERSION_AVAILABLE, version, latestVersion));
-    }
-
-    // Return the current version
-    return version;
   }
 
   public static String getCurrentVersion() {
