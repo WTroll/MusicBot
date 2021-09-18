@@ -207,7 +207,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
               + "]` "
               + FormatUtil.volumeIcon(audioPlayer.getVolume()));
 
-      return mb.setEmbed(eb.build()).build();
+      return mb.setEmbeds(eb.build()).build();
     } else return null;
   }
 
@@ -216,7 +216,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
     return new MessageBuilder()
         .setContent(
             FormatUtil.filter(manager.getBot().getConfig().getSuccess() + " **Now Playing...**"))
-        .setEmbed(
+        .setEmbeds(
             new EmbedBuilder()
                 .setTitle("No music playing")
                 .setDescription(

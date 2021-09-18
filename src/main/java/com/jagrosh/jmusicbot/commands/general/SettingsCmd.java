@@ -75,6 +75,6 @@ public class SettingsCmd extends Command {
                         .count()
                     + " audio connections",
                 null);
-    event.getChannel().sendMessage(builder.setEmbed(ebuilder.build()).build()).queue();
+    event.getChannel().sendMessage(builder.setEmbeds(ebuilder.build()).build()).queue();
   }
 }

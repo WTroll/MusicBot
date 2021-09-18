@@ -80,7 +80,7 @@ public class QueueCmd extends MusicCommand {
       Message built =
           new MessageBuilder()
               .setContent(event.getClient().getWarning() + " There is no music in the queue!")
-              .setEmbed((nowp == null ? nonowp : nowp).getEmbeds().get(0))
+              .setEmbeds((nowp == null ? nonowp : nowp).getEmbeds().get(0))
               .build();
       event.reply(
           built,
