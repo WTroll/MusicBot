@@ -33,6 +33,8 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -95,7 +97,9 @@ public class OtherUtil {
    * @return inputstream of url
    */
   public static InputStream imageFromUrl(String url) {
-    if (url == null) return null;
+    if (url == null) {
+      return null;
+    }
     try {
       URL u = new URL(url);
       URLConnection urlConnection = u.openConnection();
@@ -103,8 +107,7 @@ public class OtherUtil {
           "user-agent",
           "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.112 Safari/537.36");
       return urlConnection.getInputStream();
-    } catch (IOException | IllegalArgumentException ignore) {
-    }
+    } catch (IOException | IllegalArgumentException ignore) {}
     return null;
   }
 
@@ -136,7 +139,7 @@ public class OtherUtil {
   }
 
   public static String makeNonEmpty(String str) {
-    return str == null || str.isEmpty() ? "\u200B" : str;
+    return str == null || str.isEmpty() ? "\u200B" : str; // Zero width space
   }
 
   public static OnlineStatus parseStatus(String status) {

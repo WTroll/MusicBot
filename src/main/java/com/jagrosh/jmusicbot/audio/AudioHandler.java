@@ -142,7 +142,9 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
     if (queue.isEmpty()) {
       if (!playFromDefault()) {
         manager.getBot().getNowplayingHandler().onTrackUpdate(guildId, null, this);
-        if (!manager.getBot().getConfig().getStay()) manager.getBot().closeAudioConnection(guildId);
+        if (!manager.getBot().getConfig().getStay()) {
+          manager.getBot().closeAudioConnection(guildId);
+        }
         // unpause, in the case when the player was paused and the track has been skipped.
         // this is to prevent the player being paused next time it's being used.
         player.setPaused(false);

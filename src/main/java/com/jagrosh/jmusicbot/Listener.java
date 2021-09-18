@@ -15,11 +15,8 @@
  */
 package com.jagrosh.jmusicbot;
 
-import com.jagrosh.jmusicbot.utils.OtherUtil;
-import java.util.concurrent.TimeUnit;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.ShutdownEvent;
@@ -41,12 +38,8 @@ public class Listener extends ListenerAdapter {
 
   @Override
   public void onReady(ReadyEvent event) {
-    if (event.getJDA().getGuildCache().isEmpty()) {
-      Logger log = LoggerFactory.getLogger("MusicBot");
-      log.warn(
-          "This bot is not on any guilds! Use the following link to add the bot to your guilds!");
-      log.warn(event.getJDA().getInviteUrl(JMusicBot.RECOMMENDED_PERMS));
-    }
+    Logger log = LoggerFactory.getLogger("MusicBot");
+    log.warn("Invite URL: " + event.getJDA().getInviteUrl(JMusicBot.RECOMMENDED_PERMS));
     credit(event.getJDA());
     event
         .getJDA()

@@ -104,19 +104,6 @@ public class JMusicBot {
     SettingsManager settings = new SettingsManager();
     Bot bot = new Bot(waiter, config, settings);
 
-    AboutCommand aboutCommand =
-        new AboutCommand(
-            Color.BLUE.brighter(),
-            "a music bot that is [easy to host yourself!](https://github.com/jagrosh/MusicBot) (v"
-                + version
-                + ")",
-            new String[] {
-              "High-quality music playback", "FairQueue™ Technology", "Easy to host yourself"
-            },
-            RECOMMENDED_PERMS);
-    aboutCommand.setIsAuthor(false);
-    aboutCommand.setReplacementCharacter("\uD83C\uDFB6"); // 🎶
-
     // set up the command client
     CommandClientBuilder cb =
         new CommandClientBuilder()
@@ -128,7 +115,6 @@ public class JMusicBot {
             .setLinkedCacheSize(200)
             .setGuildSettingsManager(settings)
             .addCommands(
-                aboutCommand,
                 new PingCommand(),
                 new SettingsCmd(bot),
                 new LyricsCmd(bot),
@@ -162,14 +148,20 @@ public class JMusicBot {
                 new SetnameCmd(bot),
                 new SetstatusCmd(bot),
                 new ShutdownCmd(bot));
-    if (config.useEval()) cb.addCommand(new EvalCmd(bot));
+    if (config.useEval()) {
+      cb.addCommand(new EvalCmd(bot));
+    }
     boolean nogame = false;
-    if (config.getStatus() != OnlineStatus.UNKNOWN) cb.setStatus(config.getStatus());
-    if (config.getGame() == null) cb.useDefaultGame();
-    else if (config.getGame().getName().equalsIgnoreCase("none")) {
+    if (config.getStatus() != OnlineStatus.UNKNOWN) {
+      cb.setStatus(config.getStatus());
+    }
+    if (config.getGame() == null) {
+      cb.useDefaultGame();
+    } else if (config.getGame().getName().equalsIgnoreCase("none")) {
       cb.setActivity(null);
       nogame = true;
-    } else cb.setActivity(config.getGame());
+    } else {
+      cb.setActivity(config.getGame());
     }
 
     log.info("Loaded config from " + config.getConfigLocation());
@@ -187,7 +179,7 @@ public class JMusicBot {
               .setActivity(nogame ? null : Activity.playing("loading..."))
               .setStatus(
                   config.getStatus() == OnlineStatus.INVISIBLE
-                          || config.getStatus() == OnlineStatus.OFFLINE
+                      || config.getStatus() == OnlineStatus.OFFLINE
                       ? OnlineStatus.INVISIBLE
                       : OnlineStatus.DO_NOT_DISTURB)
               .addEventListeners(cb.build(), waiter, new Listener(bot))

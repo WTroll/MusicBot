@@ -24,7 +24,9 @@ import net.dv8tion.jda.api.entities.VoiceChannel;
 public class FormatUtil {
 
   public static String formatTime(long duration) {
-    if (duration == Long.MAX_VALUE) return "LIVE";
+    if (duration == Long.MAX_VALUE) {
+      return "LIVE";
+    }
     long seconds = Math.round(duration / 1000.0);
     long hours = seconds / (60 * 60);
     seconds %= 60 * 60;
@@ -37,11 +39,13 @@ public class FormatUtil {
   }
 
   public static String progressBar(double percent) {
-    String str = "";
+    StringBuilder str = new StringBuilder();
     for (int i = 0; i < 12; i++)
-      if (i == (int) (percent * 12)) str += "\uD83D\uDD18"; // 🔘
-      else str += "▬";
-    return str;
+      if (i == (int) (percent * 12)) {
+        str.append("\uD83D\uDD18"); // 🔘
+      }
+      else str.append("▬");
+    return str.toString();
   }
 
   public static String volumeIcon(int volume) {
@@ -53,25 +57,34 @@ public class FormatUtil {
 
   public static String listOfTChannels(List<TextChannel> list, String query) {
     String out = " Multiple text channels found matching \"" + query + "\":";
-    for (int i = 0; i < 6 && i < list.size(); i++)
+    for (int i = 0; i < 6 && i < list.size(); i++) {
       out += "\n - " + list.get(i).getName() + " (<#" + list.get(i).getId() + ">)";
-    if (list.size() > 6) out += "\n**And " + (list.size() - 6) + " more...**";
+    }
+    if (list.size() > 6) {
+      out += "\n**And " + (list.size() - 6) + " more...**";
+    }
     return out;
   }
 
   public static String listOfVChannels(List<VoiceChannel> list, String query) {
     String out = " Multiple voice channels found matching \"" + query + "\":";
-    for (int i = 0; i < 6 && i < list.size(); i++)
+    for (int i = 0; i < 6 && i < list.size(); i++) {
       out += "\n - " + list.get(i).getName() + " (ID:" + list.get(i).getId() + ")";
-    if (list.size() > 6) out += "\n**And " + (list.size() - 6) + " more...**";
+    }
+    if (list.size() > 6) {
+      out += "\n**And " + (list.size() - 6) + " more...**";
+    }
     return out;
   }
 
   public static String listOfRoles(List<Role> list, String query) {
     String out = " Multiple text channels found matching \"" + query + "\":";
-    for (int i = 0; i < 6 && i < list.size(); i++)
+    for (int i = 0; i < 6 && i < list.size(); i++) {
       out += "\n - " + list.get(i).getName() + " (ID:" + list.get(i).getId() + ")";
-    if (list.size() > 6) out += "\n**And " + (list.size() - 6) + " more...**";
+    }
+    if (list.size() > 6) {
+      out += "\n**And " + (list.size() - 6) + " more...**";
+    }
     return out;
   }
 
