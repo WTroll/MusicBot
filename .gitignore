@@ -5,3 +5,7 @@
 *.json
 *.txt
 nb*.xml
+
+/.gradle/
+/.idea/
+/build/
