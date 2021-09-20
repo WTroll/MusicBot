@@ -18,8 +18,8 @@ package com.jagrosh.jmusicbot.commands.music;
 import com.jagrosh.jdautilities.command.CommandEvent;
 import com.jagrosh.jmusicbot.Bot;
 import com.jagrosh.jmusicbot.audio.AudioHandler;
+import com.jagrosh.jmusicbot.audio.RequestMetadata;
 import com.jagrosh.jmusicbot.commands.MusicCommand;
-import net.dv8tion.jda.api.entities.User;
 
 /** @author John Grosh <john.a.grosh@gmail.com> */
 public class SkipCmd extends MusicCommand {
@@ -35,7 +35,8 @@ public class SkipCmd extends MusicCommand {
   @Override
   public void doCommand(CommandEvent event) {
     AudioHandler handler = (AudioHandler) event.getGuild().getAudioManager().getSendingHandler();
-    if (event.getAuthor().getIdLong() == handler.getRequester()) {
+    RequestMetadata rm = handler.getRequestMetadata();
+    if (event.getAuthor().getIdLong() == rm.getOwner()) {
       event.reply(
           event.getClient().getSuccess()
               + " Skipped **"
@@ -60,21 +61,20 @@ public class SkipCmd extends MusicCommand {
               event.getSelfMember().getVoiceState().getChannel().getMembers().stream()
                   .filter(m -> handler.getVotes().contains(m.getUser().getId()))
                   .count();
-      int required = (int) Math.ceil(listeners * .55);
+      int required =
+          (int)
+              Math.ceil(
+                  listeners
+                      * bot.getSettingsManager().getSettings(event.getGuild()).getSkipRatio());
       msg += skippers + " votes, " + required + "/" + listeners + " needed]`";
       if (skippers >= required) {
-        User u = event.getJDA().getUserById(handler.getRequester());
         msg +=
             "\n"
                 + event.getClient().getSuccess()
                 + " Skipped **"
                 + handler.getPlayer().getPlayingTrack().getInfo().title
-                + "**"
-                + (handler.getRequester() == 0
-                    ? ""
-                    : " (requested by "
-                        + (u == null ? "someone" : "**" + u.getName() + "**")
-                        + ")");
+                + "** "
+                + (rm.getOwner() == 0L ? "(autoplay)" : "(requested by **" + rm.user.username() + "**)");
         handler.getPlayer().stopTrack();
       }
       event.reply(msg);

@@ -33,6 +33,7 @@ public class Settings implements GuildSettingsProvider {
   private String defaultPlaylist;
   private boolean repeatMode;
   private String prefix;
+  private double skipRatio;
 
   public Settings(
       SettingsManager manager,
@@ -42,7 +43,8 @@ public class Settings implements GuildSettingsProvider {
       int volume,
       String defaultPlaylist,
       boolean repeatMode,
-      String prefix) {
+      String prefix,
+      double skipRatio) {
     this.manager = manager;
     try {
       this.textId = Long.parseLong(textId);
@@ -63,6 +65,7 @@ public class Settings implements GuildSettingsProvider {
     this.defaultPlaylist = defaultPlaylist;
     this.repeatMode = repeatMode;
     this.prefix = prefix;
+    this.skipRatio = skipRatio;
   }
 
   public Settings(
@@ -73,7 +76,8 @@ public class Settings implements GuildSettingsProvider {
       int volume,
       String defaultPlaylist,
       boolean repeatMode,
-      String prefix) {
+      String prefix,
+      double skipRatio) {
     this.manager = manager;
     this.textId = textId;
     this.voiceId = voiceId;
@@ -82,6 +86,7 @@ public class Settings implements GuildSettingsProvider {
     this.defaultPlaylist = defaultPlaylist;
     this.repeatMode = repeatMode;
     this.prefix = prefix;
+    this.skipRatio = skipRatio;
   }
 
   // Getters
@@ -151,6 +156,15 @@ public class Settings implements GuildSettingsProvider {
 
   public void setDJRole(Role role) {
     this.roleId = role == null ? 0 : role.getIdLong();
+    this.manager.writeSettings();
+  }
+
+  public double getSkipRatio() {
+    return skipRatio;
+  }
+
+  public void setSkipRatio(double skipRatio) {
+    this.skipRatio = skipRatio;
     this.manager.writeSettings();
   }
 }

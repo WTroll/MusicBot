@@ -104,6 +104,12 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
     return audioPlayer.getPlayingTrack().getUserData(Long.class);
   }
 
+  public RequestMetadata getRequestMetadata() {
+    if (audioPlayer.getPlayingTrack() == null) return RequestMetadata.EMPTY;
+    RequestMetadata rm = audioPlayer.getPlayingTrack().getUserData(RequestMetadata.class);
+    return rm == null ? RequestMetadata.EMPTY : rm;
+  }
+
   public boolean playFromDefault() {
     if (!defaultQueue.isEmpty()) {
       audioPlayer.playTrack(defaultQueue.remove(0));
@@ -133,10 +139,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
     // if the track ended normally, and we're in repeat mode, re-add it to the queue
     if (endReason == AudioTrackEndReason.FINISHED
         && manager.getBot().getSettingsManager().getSettings(guildId).getRepeatMode()) {
-      queue.add(
-          new QueuedTrack(
-              track.makeClone(),
-              track.getUserData(Long.class) == null ? 0L : track.getUserData(Long.class)));
+      queue.add(new QueuedTrack(track.makeClone(), track.getUserData(RequestMetadata.class)));
     }
 
     if (queue.isEmpty()) {
@@ -175,9 +178,10 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
                   + "...**"));
       EmbedBuilder eb = new EmbedBuilder();
       eb.setColor(guild.getSelfMember().getColor());
-      if (getRequester() != 0) {
-        User u = guild.getJDA().getUserById(getRequester());
-        if (u == null) eb.setAuthor("Unknown (ID:" + getRequester() + ")", null, null);
+      RequestMetadata rm = getRequestMetadata();
+      if (rm.getOwner() != 0L) {
+        User u = guild.getJDA().getUserById(rm.user.id());
+        if (u == null) eb.setAuthor(rm.user.username() + "#" + rm.user.discrim(), null, rm.user.avatar());
         else
           eb.setAuthor(u.getName() + "#" + u.getDiscriminator(), null, u.getEffectiveAvatarUrl());
       }
@@ -232,7 +236,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
 
   public String getTopicFormat(JDA jda) {
     if (isMusicPlaying(jda)) {
-      long userid = getRequester();
+      long userid = getRequestMetadata().getOwner();
       AudioTrack track = audioPlayer.getPlayingTrack();
       String title = track.getInfo().title;
       if (title == null || title.equals("Unknown Title")) title = track.getInfo().uri;
@@ -257,24 +261,19 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
 
   // Audio Send Handler methods
   /*@Override
-  public boolean canProvide()
-  {
-      if (lastFrame == null)
-          lastFrame = audioPlayer.provide();
-
-      return lastFrame != null;
+  public boolean canProvide() {
+    if (lastFrame == null) lastFrame = audioPlayer.provide();
+    return lastFrame != null;
   }
 
   @Override
-  public byte[] provide20MsAudio()
-  {
-      if (lastFrame == null)
-          lastFrame = audioPlayer.provide();
+  public byte[] provide20MsAudio() {
+    if (lastFrame == null) lastFrame = audioPlayer.provide();
 
-      byte[] data = lastFrame != null ? lastFrame.getData() : null;
-      lastFrame = null;
+    byte[] data = lastFrame != null ? lastFrame.getData() : null;
+    lastFrame = null;
 
-      return data;
+    return data;
   }*/
 
   @Override

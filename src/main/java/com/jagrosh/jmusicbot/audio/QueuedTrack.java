@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 John Grosh <john.a.grosh@gmail.com>.
+ * Copyright 2021 John Grosh <john.a.grosh@gmail.com>.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,17 +25,17 @@ public class QueuedTrack implements Queueable {
   private final AudioTrack track;
 
   public QueuedTrack(AudioTrack track, User owner) {
-    this(track, owner.getIdLong());
+    this(track, new RequestMetadata(owner));
   }
 
-  public QueuedTrack(AudioTrack track, long owner) {
+  public QueuedTrack(AudioTrack track, RequestMetadata rm) {
     this.track = track;
-    this.track.setUserData(owner);
+    this.track.setUserData(rm);
   }
 
   @Override
   public long getIdentifier() {
-    return track.getUserData(Long.class);
+    return track.getUserData(RequestMetadata.class).getOwner();
   }
 
   public AudioTrack getTrack() {
@@ -49,7 +49,7 @@ public class QueuedTrack implements Queueable {
         + "]` **"
         + track.getInfo().title
         + "** - <@"
-        + track.getUserData(Long.class)
+        + track.getUserData(RequestMetadata.class).getOwner()
         + ">";
   }
 }
