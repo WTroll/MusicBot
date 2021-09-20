@@ -32,6 +32,10 @@
       <name>Maven Central</name>
       <url>https://repo.maven.apache.org/maven2/</url>
     </repository>
+    <repository>
+      <id>LavaPlayer-Natives-Extra</id>
+      <url>https://rockrevenchy.ddns.net/index.php/apps/sharingpath/rockrevenchy/Documents/LavaPlayer-Natives-Extra</url>
+    </repository>
   </repositories>
 
   <dependencies>
