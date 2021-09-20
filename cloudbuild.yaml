@@ -1,0 +1,4 @@
+steps:
+  - name: maven:3-openjdk-17
+    entrypoint: mvn
+    args: ['test']
